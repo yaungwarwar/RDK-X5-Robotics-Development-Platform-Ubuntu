@@ -34,7 +34,7 @@ automated validation uses mocked hardware and does not substitute for physical v
 Do not run the target installer/upgrade on the workstation. Use an isolated venv; no sudo pip.
 
 ```bash
-cd /home/eve/rdk/rdk-platform
+cd /home/uname/rdk/rdk-platform
 env -u PYTHONPATH -u PYTHONHOME python3.10 -m venv .venv
 env -u PYTHONPATH -u PYTHONHOME .venv/bin/python -m pip install -r backend/requirements.txt -r tests/requirements.txt
 ./scripts/start.sh --mock
@@ -43,7 +43,7 @@ env -u PYTHONPATH -u PYTHONHOME .venv/bin/python -m pip install -r backend/requi
 Another terminal:
 
 ```bash
-cd /home/eve/rdk/rdk-platform/frontend
+cd /home/uname/rdk/rdk-platform/frontend
 npm ci
 npm run dev
 ```
