@@ -28,13 +28,13 @@ Run in the same shell used for preparation. Output may contain local paths;
 review it before sharing. These commands do not install or remove packages.
 
 ```bash
-VENV="$HOME/rdk-platform-0.1.1/.venv/bin/python"
+VENV="${RDK_FAILED_STAGE:?set preserved staging path}/.venv/bin/python"
 echo '=== platform ==='
 uname -m
 /usr/bin/python3 --version
 "$VENV" --version
 echo '=== venv configuration ==='
-cat "$HOME/rdk-platform-0.1.1/.venv/pyvenv.cfg"
+cat "${RDK_FAILED_STAGE:?set preserved staging path}/.venv/pyvenv.cfg"
 echo '=== staged dependency check ==='
 "$VENV" -m pip check
 echo '=== system dependency check ==='
@@ -55,7 +55,7 @@ for name in ('fastapi', 'uvicorn', 'pydantic', 'psutil', 'starlette', 'anyio', '
     print('  module:', spec.origin if spec else 'not found')
 PY
 echo '=== application imports ==='
-(cd "$HOME/rdk-platform-0.1.1/backend" && "$VENV" -B -c 'import fastapi, uvicorn, pydantic, psutil, app.main; print("application imports OK")')
+(cd "${RDK_FAILED_STAGE:?set preserved staging path}/backend" && "$VENV" -B -c 'import fastapi, uvicorn, pydantic, psutil, app.main; print("application imports OK")')
 echo '=== native ROS2 import in current shell ==='
 /usr/bin/python3 -B -c 'import rclpy; print("rclpy:", rclpy.__file__)'
 ```

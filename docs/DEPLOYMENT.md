@@ -1,40 +1,28 @@
-# Manual v0.1.2 → v0.1.3 upgrade (development)
+# Historical v0.1.2 → v0.1.3 deployment
 
-> Historical operator procedure: target-specific paths and addresses belong in private operator records; review and redact a copy before publication.
+The native ARM64 upgrade used fresh staging and backup directories. Preparation resolved the active generated Compose configuration from `.deployment/active.json`. The operator inspected the PREPARED journal, isolated venv, backup, recovery scripts, actual generated configuration, image identity and isolation settings before activation.
 
-The user reports v0.1.2 is physically active on the RDK X5. The v0.1.3 release is not physically validated; do not deploy until the requested local validation and release artifact are complete. Preserve `/home/sunrise/rdk-backups/before-0.1.2` and all older transactions. Use a fresh staging tree and backup. This upgrade supports only 0.1.2 → 0.1.3, with rollback to 0.1.2. Use the active generated compatibility deployment, not the old base Compose file. Preparation resolves `.deployment/active.json`, validates the path, and rejects an explicit mismatching `--compose-file`.
+Activation used the stable recovery copy in the new backup. Native health, loopback dashboard access, telemetry and ROS2 discovery were verified. The original transaction identifiers, private paths and operational commands are retained in the operator record. Physical rollback remains untested.
 
-After a release archive and checksum have been verified and transferred manually to `/home/sunrise/rdk-incoming`:
+See [physical acceptance](V0.1.3_PHYSICAL_ACCEPTANCE.md), [transaction recovery](UPGRADE_RECOVERY.md) and the [current laboratory acceptance gates](V0.2.0_PHASE_B5_ACCEPTANCE_PLAN.md). The separate laboratory bundle requires its own authorization and installation outside the active application.
+
+## Historical command reference
+
+During a separately authorized v0.1.2 → v0.1.3 maintenance window, the operator selects the existing installation, fresh extracted staging tree and unused backup directory in the private runbook. The examples use those absolute paths through shell variables. Preparation must succeed before inspecting the generated configuration, image backup, security settings and transaction state.
 
 ```bash
-cd /home/sunrise/rdk-incoming
-sha256sum -c rdk-control-center-0.1.3.tar.gz.sha256
-mkdir -m 700 /home/sunrise/rdk-platform-0.1.3 && tar -xzf rdk-control-center-0.1.3.tar.gz --strip-components=1 -C /home/sunrise/rdk-platform-0.1.3
-/usr/bin/python3 /home/sunrise/rdk-platform-0.1.3/scripts/upgrade.py prepare --release /home/sunrise/rdk-platform-0.1.3 --backup /home/sunrise/rdk-backups/before-0.1.3
-/usr/bin/python3 /home/sunrise/rdk-platform-0.1.3/scripts/upgrade.py status --transaction /home/sunrise/rdk-backups/before-0.1.3
-/usr/bin/python3 /home/sunrise/rdk-platform-0.1.3/scripts/upgrade.py diagnose --transaction /home/sunrise/rdk-backups/before-0.1.3
-cat /home/sunrise/rdk-backups/before-0.1.3/compatibility.json
-cat /home/sunrise/rdk-backups/before-0.1.3/transaction.json
-ls -lh /home/sunrise/rdk-backups/before-0.1.3/frontend-image.tar
+/usr/bin/python3 "${RDK_STAGE:?set verified staging path}/scripts/upgrade.py" prepare \
+  --release "$RDK_STAGE" --backup "${RDK_BACKUP:?set unused backup path}"
 ```
 
-Inspect the backup, active deployment, generated compatibility configuration, image and security limits before activation. CPU quota must remain omitted where unavailable; memory/PID limits, unprivileged container, read-only filesystem, dropped capabilities, no-new-privileges, loopback access and systemd hardening remain required. If preparation fails, retain all evidence and retry only with new paths. Do not overwrite old backups.
-
-After review, explicitly activate and check health:
+After inspecting PREPARED and confirming the activation window, use the recovery copy for that transaction. Verify service and dashboard health and the loopback configuration after activation.
 
 ```bash
-/usr/bin/python3 /home/sunrise/rdk-backups/before-0.1.3/recovery/upgrade.py apply --transaction /home/sunrise/rdk-backups/before-0.1.3/transaction.json
-cd /home/sunrise/rdk-platform
-./scripts/healthcheck.sh
-./scripts/compose.sh ps
+/usr/bin/python3 "${RDK_BACKUP:?set prepared backup path}/recovery/upgrade.py" apply \
+  --transaction "$RDK_BACKUP/transaction.json"
+```
+
+```bash
+(cd "${RDK_INSTALL:?set existing installation path}" && ./scripts/healthcheck.sh && ./scripts/compose.sh ps)
 systemctl status rdk-control-center.service --no-pager
-curl -fsS http://127.0.0.1:8089/api/v1/ros2
 ```
-
-For explicit rollback, including interrupted directory moves:
-
-```bash
-/usr/bin/python3 /home/sunrise/rdk-backups/before-0.1.3/recovery/upgrade.py rollback --transaction /home/sunrise/rdk-backups/before-0.1.3/transaction.json
-```
-
-Review the ROS2 graph and camera publisher diagnostics. Physical v0.1.3 initialization, dynamic BPU load and physical rollback remain unvalidated. Use the loopback dashboard through the established SSH tunnel. No authentication or TLS is provided. See `ROS2_LOGGING_COMPATIBILITY.md`, `UPGRADE_RECOVERY.md` and historical Phase D documentation.

@@ -48,7 +48,7 @@ The user successfully deployed 0.1.0 on RDK X5, Ubuntu 22.04.5/ARM64, kernel 6.1
 |---|---|
 | RDK-COMPAT-001 | Base Compose quota removed; local Docker driver/version/parent/leaf evidence inspected by a read-only generator; positive memory/PID isolation required; missing CPU quota omitted with a compatibility warning |
 | Generated deployment configs | Separate exclusive JSON Compose bundles, original admin files retained, actual Compose validation for both CPU profiles, no silent overwrite |
-| Security controls | Native sunrise service and all existing systemd controls unchanged; uid/gid 101 frontend, read-only root/config, cap_drop ALL, no-new-privileges, localhost binding and memory/PID limits retained |
+| Security controls | Native unprivileged service and all existing systemd controls unchanged; uid/gid 101 frontend, read-only root/config, cap_drop ALL, no-new-privileges, localhost binding and memory/PID limits retained |
 | Native BPU ratio | Exact verified platform path, strict integer 0–100 validation and provenance/freshness; genuine zero preserved; no frequency inference |
 | Dedicated BPU temperature | Discover hwmon by pvt name, dedicated temp2 only, single process slot, timeout/backoff/quarantine; local fixture tests |
 | CPU-temperature proxy | Separate optional CPU thermal-zone measurement with explicit attribution/fallback state; never inserted into dedicated BPU temperature |

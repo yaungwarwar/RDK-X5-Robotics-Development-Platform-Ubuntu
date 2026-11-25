@@ -91,7 +91,7 @@ CPU-supported/unavailable profiles validate and preserve memory/PID and
 security settings. Systemd verification passed on a temporary unit copy with
 only the executable/workspace path changed to the local workspace; the shipped
 unit was not installed or modified. Direct verification of the shipped unit
-cannot find its target-only `/home/sunrise/.../start.sh` on this workstation.
+cannot find its target-only `<target-install>/scripts/start.sh` on this workstation.
 
 Both Nginx templates reported `syntax is ok` using temporary QA path and port
 substitutions. The default then failed `socket() 127.0.0.1:18088 failed (1:
@@ -109,8 +109,8 @@ was made to modify the security policy. Run the following on an unrestricted
 Ubuntu workstation after checking those tool paths:
 
 ```bash
-cd /home/eve/rdk/rdk-platform/frontend
-npm run test:e2e -- --nginx /tmp/rdk-nginx/usr/sbin/nginx --compose /tmp/rdk-docker-compose --browser /home/eve/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome
+cd "${RDK_WORKSPACE:?set the absolute checkout path}/frontend"
+npm run test:e2e -- --nginx /tmp/rdk-nginx/usr/sbin/nginx --compose /tmp/rdk-docker-compose --browser "$HOME/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome"
 ```
 
 The user subsequently ran that exact command successfully on the unrestricted

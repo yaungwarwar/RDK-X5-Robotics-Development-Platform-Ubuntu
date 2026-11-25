@@ -13,9 +13,9 @@ Reproduce from the workspace (no physical device):
 ```bash
 frontend/node_modules/.bin/tsc --noEmit -p frontend/camera-lab/tsconfig.json
 frontend/node_modules/.bin/vite build --config frontend/camera-lab/vite.config.ts
-RDK_TEST_BROWSER=/home/eve/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome frontend/node_modules/.bin/playwright test --config frontend/camera-lab/playwright.config.ts
+RDK_TEST_BROWSER="$HOME/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome" frontend/node_modules/.bin/playwright test --config frontend/camera-lab/playwright.config.ts
 cd frontend
-env -u PYTHONPATH -u PYTHONHOME npm run test:e2e -- --python /home/eve/rdk/rdk-platform/.venv-recovered/bin/python --nginx /home/eve/rdk/rdk-platform/.venv-qa-tools/nginx/usr/sbin/nginx --compose /home/eve/rdk/rdk-platform/.venv-qa-tools/bin/docker-compose --browser /home/eve/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome
+env -u PYTHONPATH -u PYTHONHOME npm run test:e2e -- --python "${RDK_WORKSPACE:?set the absolute checkout path}/.venv-recovered/bin/python" --nginx "${RDK_WORKSPACE:?set the absolute checkout path}/.venv-qa-tools/nginx/usr/sbin/nginx" --compose "${RDK_WORKSPACE:?set the absolute checkout path}/.venv-qa-tools/bin/docker-compose" --browser "$HOME/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome"
 ```
 
 For interactive preview, build the lab as above, then run `.venv-recovered/bin/python prototype/camera_lab/server.py` from the workspace and open `http://127.0.0.1:18100/`. Stop the process after use. It is a laboratory service, not a production endpoint. The existing release archive and original manifest were not regenerated.

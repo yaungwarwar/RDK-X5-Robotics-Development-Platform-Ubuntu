@@ -7,16 +7,16 @@ The recovered workstation environment completed 235 Python tests, 12 existing da
 Reproduce on the development workstation:
 
 ```bash
-cd /home/eve/rdk/rdk-platform
+cd "${RDK_WORKSPACE:?set the absolute checkout path}"
 .venv-recovered/bin/python -m pip check
 .venv-recovered/bin/python -m ruff check backend scripts tests prototype/camera_lab
 .venv-recovered/bin/python -m ruff format --check backend scripts tests prototype/camera_lab
 .venv-recovered/bin/python -m compileall -q backend scripts tests prototype/camera_lab
 frontend/node_modules/.bin/tsc --noEmit -p frontend/camera-lab/tsconfig.json
 frontend/node_modules/.bin/vite build --config frontend/camera-lab/vite.config.ts
-RDK_TEST_BROWSER=/home/eve/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome frontend/node_modules/.bin/playwright test --config frontend/camera-lab/playwright.config.ts
+RDK_TEST_BROWSER="$HOME/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome" frontend/node_modules/.bin/playwright test --config frontend/camera-lab/playwright.config.ts
 cd frontend
-env -u PYTHONPATH -u PYTHONHOME npm run test:e2e -- --python /home/eve/rdk/rdk-platform/.venv-recovered/bin/python --nginx /home/eve/rdk/rdk-platform/.venv-qa-tools/nginx/usr/sbin/nginx --compose /home/eve/rdk/rdk-platform/.venv-qa-tools/bin/docker-compose --browser /home/eve/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome
+env -u PYTHONPATH -u PYTHONHOME npm run test:e2e -- --python "${RDK_WORKSPACE:?set the absolute checkout path}/.venv-recovered/bin/python" --nginx "${RDK_WORKSPACE:?set the absolute checkout path}/.venv-qa-tools/nginx/usr/sbin/nginx" --compose "${RDK_WORKSPACE:?set the absolute checkout path}/.venv-qa-tools/bin/docker-compose" --browser "$HOME/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome"
 ```
 
 The native child is exercised separately under `/usr/bin/python3` by the mock-ROS test; the remaining suite uses `.venv-recovered`. No actual GS130WI encoding, QoS, calibration or physical performance limits have been validated. PNG validation checks chunk CRC and structure; JPEG validation checks bounded marker structure and dimensions but relies on browser decoding for full image decode. Physical rollback remains untested.

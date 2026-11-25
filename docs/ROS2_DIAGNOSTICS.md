@@ -24,7 +24,7 @@ Execute manually in the target's existing terminal; the development agent did no
 1. Inspect the service and the specific adapter error:
 
 ```bash
-cd /home/sunrise/rdk-platform
+cd "${RDK_INSTALL:?set the installed application directory}"
 systemctl status rdk-control-center.service --no-pager
 systemctl show rdk-control-center.service --property=User,Group,WorkingDirectory,MainPID,PrivateTmp,ProtectSystem,ProtectHome,DropInPaths
 systemctl cat rdk-control-center.service
@@ -50,7 +50,7 @@ If `/proc/PID/environ` or namespace metadata is denied, record that limitation. 
 3. Repeat the already verified interactive probe, with a bounded manual deadline, without changing the graph or camera configuration:
 
 ```bash
-cd /home/sunrise/rdk-platform
+cd "${RDK_INSTALL:?set the installed application directory}"
 source /opt/tros/humble/setup.bash
 time timeout 8s /usr/bin/python3 backend/app/adapters/ros2_probe.py > /tmp/rdk-ros2-probe.json
 ```

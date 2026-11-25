@@ -1,6 +1,6 @@
 # Physical camera laboratory resource report
 
-> Historical operator evidence: review and redact target-specific details before publication.
+> Public summary. Detailed operator records are retained privately.
 
 On 2026-11-25, before the user started the camera, v0.1.3 native health was `ok` with a fresh collector and null error; the dashboard was healthy. Root filesystem had 45 GiB available; memory was 7080 MiB total and 6276 MiB available; swap was 0 MiB. CPU and DDR were approximately 58.434 °C and 59.460 °C. After the user started the camera, the initial metadata-only probe saw both zones at 72.992 °C, a healthy service, scope memory peak 44,679,168 bytes, 18 current tasks and 2.682 seconds of process CPU time. These are point observations.
 

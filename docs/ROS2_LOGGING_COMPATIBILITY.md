@@ -4,10 +4,10 @@ The user reports that on the physical RDK X5, `rclpy` imported but
 `rclpy.init(args=[])` failed under the service's mount namespace with:
 
 ```text
-RuntimeError: Failed opening file /home/sunrise/.ros/log/python3_95833_1795535683429.log for writing: Read-only file system
+RuntimeError: Failed opening file <service-home>/.ros/log/<log-file> for writing: Read-only file system
 ```
 
-Three controlled tests as sunrise in that service namespace showed: (A) default
+Three controlled tests as the configured service user in that service namespace showed: (A) default
 initialization failed as above; (B) setting ROS_LOG_DIR to a private writable
 temporary directory succeeded; (C) initialization with
 `["--ros-args", "--disable-external-lib-logs"]` succeeded. The user also

@@ -36,9 +36,8 @@ activation journal and logs. The recovery copy in `backup/recovery/upgrade.py`
 supports explicit rollback with `--transaction /path/to/backup/transaction.json`.
 Automatic rollback failures are reported and recorded as FAILED; do not treat
 them as a successful restoration. Resolve the recorded problem and review the
-actual installed and backup paths before attempting recovery. No physical
-upgrade or rollback has been validated with these changes.
+actual installed and backup paths before attempting recovery. See the [historical upgrade evidence](V0.1.3_PHYSICAL_ACCEPTANCE.md). Physical rollback remains untested.
 
 ## Direct migration paths
 
-The v0.1.3 tool supports operational `/home/sunrise/rdk-platform` (0.1.2) to fresh `/home/sunrise/rdk-platform-0.1.3`, with new backup `/home/sunrise/rdk-backups/before-0.1.3`; rollback restores 0.1.2. Preserve `/home/sunrise/rdk-backups/before-0.1.2` and older transactions. The previous 0.1.0 → 0.1.2 recovery tool remains with its own backup. The active generated compatibility configuration is authoritative; do not use the stale base Compose file. Physical v0.1.3 upgrade and rollback remain unvalidated.
+The v0.1.3 tool supports upgrading an installed v0.1.2 from a fresh staging directory with a new private backup. The rollback target is v0.1.2. Preserve all older transactions and the recovery scripts stored with each backup. The active generated Compose configuration is authoritative.

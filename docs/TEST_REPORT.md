@@ -21,8 +21,8 @@ SOCK_STREAM)` with EPERM, so real proxy and browser validation has not been
 run for v0.1.3. On an unrestricted workstation use:
 
 ```bash
-cd /home/eve/rdk/rdk-platform/frontend
-npm run test:e2e -- --nginx /tmp/rdk-nginx/usr/sbin/nginx --compose /tmp/rdk-docker-compose --browser /home/eve/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome
+cd "${RDK_WORKSPACE:?set the absolute checkout path}/frontend"
+npm run test:e2e -- --nginx /tmp/rdk-nginx/usr/sbin/nginx --compose /tmp/rdk-docker-compose --browser "$HOME/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome"
 ```
 
 The user reports v0.1.2 physical deployment and isolated ARM64 dependency check
@@ -104,11 +104,11 @@ One existing non-failing warning remains: Starlette deprecates its httpx TestCli
 ## Reproduce
 
 ```bash
-cd /home/eve/rdk/rdk-platform/frontend
+cd "${RDK_WORKSPACE:?set the absolute checkout path}/frontend"
 npm run typecheck
 npm run lint
 npm run build
-npm run test:e2e -- --nginx /tmp/rdk-nginx/usr/sbin/nginx --compose /tmp/rdk-docker-compose --browser /home/eve/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome
+npm run test:e2e -- --nginx /tmp/rdk-nginx/usr/sbin/nginx --compose /tmp/rdk-docker-compose --browser "$HOME/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome"
 ```
 
 The QA runner uses the project `.venv/bin/python`, starts/stops only its owned local Uvicorn/Nginx processes on 18088/18089, runs Python checks and generated Compose validations, then tests the production static build. Ordinary systems can use Nginx/Chromium on their normal local paths; README documents overrides. Do not run the installer/upgrade on the workstation.
