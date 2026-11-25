@@ -26,13 +26,16 @@ type Frame = {
       model: string;
       k: number[];
       d: number[];
-      calibrated: boolean;
+      intrinsics_present: boolean;
     }
   > | null;
   worker_rss_kib?: number | null;
   worker_cpu_pct?: number | null;
   worker_dropped?: number | null;
   invalid_frames?: number | null;
+  throttled_frames?: number | null;
+  diagnostic_overflow?: number | null;
+  acknowledged_frames?: number;
   lab_peak_rss_kib?: number;
   lab_cpu_pct?: number | null;
 };
@@ -42,6 +45,8 @@ function App() {
   const [imageFormat, setImageFormat] = useState<"raw" | "compressed">("raw");
   const [running, setRunning] = useState(false);
   const [state, setState] = useState("Inactive");
+  const [diagnostic, setDiagnostic] = useState<string | null>(null);
+  const [publishers, setPublishers] = useState<number | null>(null);
   const [frame, setFrame] = useState<Frame | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [clock, setClock] = useState(Date.now());
@@ -64,6 +69,8 @@ function App() {
     let ws: WebSocket | null = null;
     let meta: Frame | null = null;
     setState("Connecting");
+    setDiagnostic(null);
+    setPublishers(null);
     setFrame(null);
     setUrl(null);
     void closing.current
@@ -84,10 +91,14 @@ function App() {
           if (typeof event.data === "string") {
             try {
               const message = JSON.parse(event.data);
-              if (message.type === "status") setState(message.message);
-              else if (message.type === "error")
+              if (message.type === "status") {
+                setState(message.message);
+                if (typeof message.publishers === "number")
+                  setPublishers(message.publishers);
+              } else if (message.type === "error") {
+                setDiagnostic(message.message);
                 setState(`Error: ${message.message}`);
-              else if (message.type === "frame") meta = message as Frame;
+              } else if (message.type === "frame") meta = message as Frame;
               else current.close();
             } catch {
               current.close();
@@ -352,13 +363,21 @@ function App() {
               </div>
               <dl>
                 <div>
+                  <dt>Last diagnostic</dt>
+                  <dd>{diagnostic ?? "None"}</dd>
+                </div>
+                <div>
                   <dt>Camera availability</dt>
                   <dd>
                     {source === "synthetic"
                       ? "Unavailable · mock source"
-                      : frame
-                        ? "Frame received"
-                        : "Unavailable"}
+                      : publishers === 0
+                        ? "No publisher detected"
+                        : frame && !stale
+                          ? "Frame received"
+                          : publishers !== null
+                            ? `Publisher present (${publishers}); no fresh usable frame`
+                            : "Publisher status unavailable"}
                   </dd>
                 </div>
                 <div>
@@ -376,13 +395,13 @@ function App() {
                   <dd>{display(frame?.display_mode)}</dd>
                 </div>
                 <div>
-                  <dt>Measured FPS</dt>
+                  <dt>Broker sent FPS (session average)</dt>
                   <dd>
                     {frame?.fps == null ? "Unavailable" : `${frame.fps} fps`}
                   </dd>
                 </div>
                 <div>
-                  <dt>Frame age</dt>
+                  <dt>Age since broker receipt (lower bound)</dt>
                   <dd>
                     {age == null
                       ? "Unavailable"
@@ -390,7 +409,7 @@ function App() {
                   </dd>
                 </div>
                 <div>
-                  <dt>Bandwidth</dt>
+                  <dt>Sent image payload (session average)</dt>
                   <dd>
                     {frame?.bandwidth_bps == null
                       ? "Unavailable"
@@ -398,7 +417,7 @@ function App() {
                   </dd>
                 </div>
                 <div>
-                  <dt>Dropped frames</dt>
+                  <dt>Broker slot replacements</dt>
                   <dd>{display(frame?.dropped)}</dd>
                 </div>
                 <div>
@@ -409,10 +428,12 @@ function App() {
                           ([topic, info]) => (
                             <span key={topic}>
                               {topic}:{" "}
-                              {info.calibrated ? "calibrated" : "uncalibrated"},{" "}
-                              {info.width} × {info.height},{" "}
-                              {info.model || "model unavailable"}, K:{" "}
-                              {info.k.join(", ")}, D: {info.d.join(", ")}
+                              {info.intrinsics_present
+                                ? "intrinsics present"
+                                : "intrinsics unavailable"}{" "}
+                              (not independently validated), {info.width} ×{" "}
+                              {info.height}, {info.model || "model unavailable"}
+                              , K: {info.k.join(", ")}, D: {info.d.join(", ")}
                               <br />
                             </span>
                           ),
@@ -423,15 +444,23 @@ function App() {
                 {source === "native" && (
                   <>
                     <div>
-                      <dt>Worker dropped</dt>
+                      <dt>Worker IPC slot replacements</dt>
                       <dd>{display(frame?.worker_dropped)}</dd>
+                    </div>
+                    <div>
+                      <dt>Worker throttled messages</dt>
+                      <dd>{display(frame?.throttled_frames)}</dd>
+                    </div>
+                    <div>
+                      <dt>Diagnostic queue overflow</dt>
+                      <dd>{display(frame?.diagnostic_overflow)}</dd>
                     </div>
                     <div>
                       <dt>Invalid frames</dt>
                       <dd>{display(frame?.invalid_frames)}</dd>
                     </div>
                     <div>
-                      <dt>Worker RSS</dt>
+                      <dt>Worker process RSS</dt>
                       <dd>
                         {frame?.worker_rss_kib == null
                           ? "Unavailable"
@@ -439,7 +468,7 @@ function App() {
                       </dd>
                     </div>
                     <div>
-                      <dt>Worker CPU</dt>
+                      <dt>Worker process CPU (sample)</dt>
                       <dd>
                         {frame?.worker_cpu_pct == null
                           ? "Unavailable"
@@ -449,7 +478,7 @@ function App() {
                   </>
                 )}
                 <div>
-                  <dt>Lab peak RSS</dt>
+                  <dt>Broker process peak RSS</dt>
                   <dd>
                     {frame?.lab_peak_rss_kib == null
                       ? "Unavailable"
@@ -457,12 +486,16 @@ function App() {
                   </dd>
                 </div>
                 <div>
-                  <dt>Lab CPU</dt>
+                  <dt>Broker process CPU (session average)</dt>
                   <dd>
                     {frame?.lab_cpu_pct == null
                       ? "Unavailable"
                       : `${frame.lab_cpu_pct.toFixed(1)}% of one core`}
                   </dd>
+                </div>
+                <div>
+                  <dt>Browser acknowledged frames</dt>
+                  <dd>{display(frame?.acknowledged_frames)}</dd>
                 </div>
               </dl>
             </section>

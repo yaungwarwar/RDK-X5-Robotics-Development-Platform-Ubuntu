@@ -148,19 +148,27 @@ class NativeSupervisor:
                     slot.publish_native(data, header)
                 elif header["type"] == "error":
                     self.error = str(header.get("message", "Invalid image"))[:160]
-                    slot.error = self.error
-                    slot.event.set()
+                    if header.get("invalid_frames") is not None:
+                        self.error += f" (invalid messages: {header['invalid_frames']})"
+                    if header.get("diagnostic_overflow"):
+                        self.error += (
+                            f" (diagnostic queue overflow: {header['diagnostic_overflow']})"
+                        )
+                    slot.report_error(self.error)
                 elif header["type"] == "status":
-                    continue
+                    count = header.get("publishers")
+                    if type(count) is not int or not 0 <= count <= 100000:
+                        raise ValueError("Invalid publisher count")
+                    slot.publishers = count
+                    slot.status_pending = True
+                    slot.event.set()
                 else:
                     raise ValueError("Unexpected IPC record")
         except asyncio.CancelledError:
             raise
         except (Exception, asyncio.IncompleteReadError) as exc:
             self.error = "Native worker disconnected: " + str(exc)[:120]
-            slot.error = self.error
-            slot.fatal = True
-            slot.event.set()
+            slot.report_error(self.error, fatal=True)
 
     async def stop(self):
         if self.cleanup_task is None:

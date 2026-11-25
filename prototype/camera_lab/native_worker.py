@@ -187,7 +187,7 @@ def calibration(msg):
         "model": str(msg.distortion_model),
         "k": k,
         "d": d,
-        "calibrated": k[0] != 0,
+        "intrinsics_present": k[0] != 0,
     }
 
 
@@ -195,6 +195,8 @@ class Writer:
     def __init__(self, stream):
         self.stream = stream
         self.frames = queue.Queue(maxsize=1)
+        self.diagnostics = queue.Queue(maxsize=16)
+        self.diagnostic_overflow = 0
         self.closed = threading.Event()
         self.first_written = threading.Event()
         self.dropped = 0
@@ -202,6 +204,15 @@ class Writer:
         self.thread.start()
 
     def offer(self, header, payload=b""):
+        if header["type"] in ("ready", "error"):
+            try:
+                self.diagnostics.put_nowait(dict(header))
+            except queue.Full:
+                self.diagnostic_overflow += 1
+            return
+        if header["type"] == "status" and not self.frames.empty():
+            return
+        header = dict(header, diagnostic_overflow=self.diagnostic_overflow)
         packet = pack_record(header, payload)
         try:
             self.frames.put_nowait(packet)
@@ -216,9 +227,14 @@ class Writer:
     def run(self):
         while not self.closed.is_set():
             try:
-                packet = self.frames.get(timeout=0.1)
+                header = self.diagnostics.get_nowait()
+                header["diagnostic_overflow"] = self.diagnostic_overflow
+                packet = pack_record(header)
             except queue.Empty:
-                continue
+                try:
+                    packet = self.frames.get(timeout=0.1)
+                except queue.Empty:
+                    continue
             try:
                 self.stream.write(packet)
                 self.stream.flush()
@@ -226,6 +242,20 @@ class Writer:
             except (BrokenPipeError, OSError):
                 self.closed.set()
                 return
+
+
+class PreviewCounters:
+    def __init__(self):
+        self.last = 0.0
+        self.throttled = 0
+        self.invalid = 0
+
+    def admit(self, now):
+        if now - self.last < 0.2:
+            self.throttled += 1
+            return False
+        self.last = now
+        return True
 
 
 def main():
@@ -251,15 +281,13 @@ def main():
     if args.format == "compressed":
         topic = "/image_combine_jpeg"
     cal = {}
-    last = [0.0]
     seq = [0]
-    errors = [0]
+    counters = PreviewCounters()
 
     def image_callback(msg):
         now = time.monotonic()
-        if now - last[0] < 0.2:
+        if not counters.admit(now):
             return
-        last[0] = now
         try:
             data, mime, width, height, encoding = (
                 compressed_image(msg) if args.format == "compressed" else raw_to_png(msg)
@@ -284,13 +312,16 @@ def main():
                     "calibration": cal,
                     "source_stamp": capture,
                     "worker_dropped": writer.dropped,
-                    "invalid_frames": errors[0],
+                    "invalid_frames": counters.invalid,
+                    "throttled_frames": counters.throttled,
                 },
                 data,
             )
         except (ValueError, TypeError, OverflowError) as exc:
-            errors[0] += 1
-            writer.offer({"type": "error", "message": str(exc)[:160], "invalid_frames": errors[0]})
+            counters.invalid += 1
+            writer.offer(
+                {"type": "error", "message": str(exc)[:160], "invalid_frames": counters.invalid}
+            )
 
     def on_info(msg, name):
         try:

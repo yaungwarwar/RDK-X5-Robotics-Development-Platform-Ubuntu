@@ -4,6 +4,7 @@ import asyncio
 import logging
 import resource
 import time
+from collections import deque
 from contextlib import suppress
 from pathlib import Path
 
@@ -25,12 +26,21 @@ DIST = Path(__file__).resolve().parent / "dist"
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.mount("/assets", StaticFiles(directory=DIST / "assets", check_dir=False), name="assets")
 clients = set()
+client_sources = {}
+ack_totals = {"acknowledged": 0, "invalid": 0, "timeouts": 0}
 native = NativeSupervisor()
 
 
 @app.get("/lab/status")
 async def status():
-    return {"source": "synthetic", "active_clients": len(clients), "max_clients": MAX_CLIENTS}
+    sources = sorted(set(client_sources.values()))
+    return {
+        "source": sources[0] if len(sources) == 1 else "mixed" if sources else "inactive",
+        "sources": sources,
+        "active_clients": len(clients),
+        "max_clients": MAX_CLIENTS,
+        "acknowledgements": dict(ack_totals),
+    }
 
 
 @app.get("/")
@@ -77,6 +87,19 @@ class LatestFrame:
         self.native_meta = None
         self.error = None
         self.fatal = False
+        self.publishers = None
+        self.status_pending = False
+        self.errors = deque(maxlen=16)
+        self.error_overflow = 0
+
+    def report_error(self, message, fatal=False):
+        self.error = message
+        self.fatal = self.fatal or fatal
+        if len(self.errors) == self.errors.maxlen:
+            self.error_overflow += 1
+        else:
+            self.errors.append(message)
+        self.event.set()
 
     def publish(self, data, encoding, width, height):
         data = validate_frame(data, encoding, width, height)
@@ -107,10 +130,14 @@ async def wait_for_frame_or_disconnect(slot, ws, timeout):
         if frame not in done:
             raise asyncio.TimeoutError()
     finally:
-        for pending in (frame, incoming):
-            if not pending.done():
-                pending.cancel()
-        await asyncio.gather(frame, incoming, return_exceptions=True)
+        # A disconnect can race the ASGI server's cancellation of this session.
+        # Finish reaping both helper tasks without replacing the disconnect with
+        # a cancellation raised by the surrounding AnyIO cancel scope.
+        with anyio.CancelScope(shield=True):
+            for pending in (frame, incoming):
+                if not pending.done():
+                    pending.cancel()
+            await asyncio.gather(frame, incoming, return_exceptions=True)
 
 
 async def produce(slot, view):
@@ -130,7 +157,7 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
         or image_format not in ("raw", "compressed")
         or (source == "native" and image_format == "compressed" and view != "combined")
         or origin != f"http://{host}"
-        or host not in ("127.0.0.1:18100", "localhost:18100", "testserver")
+        or host not in ("127.0.0.1:18100", "localhost:18100")
     ):
         await ws.close(code=1008)
         return
@@ -138,10 +165,12 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
         await ws.close(code=1013)
         return
     clients.add(ws)
+    client_sources[ws] = source
     try:
         await ws.accept()
     except BaseException:
         clients.discard(ws)
+        client_sources.pop(ws, None)
         raise
     slot = LatestFrame()
     task = None
@@ -179,6 +208,7 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
             )
         except BaseException as exc:
             clients.discard(ws)
+            client_sources.pop(ws, None)
             if started_native:
                 with anyio.CancelScope(shield=True):
                     await native.stop()
@@ -197,6 +227,7 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
     last = 0
     sent_bytes = 0
     sent_count = 0
+    acknowledged = 0
     started = time.monotonic()
     cpu_started = time.process_time()
     try:
@@ -213,10 +244,38 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
                 )
                 continue
             slot.event.clear()
-            if slot.error:
-                await ws.send_json({"type": "error", "message": slot.error})
-                slot.error = None
-                if slot.fatal:
+            if slot.status_pending:
+                slot.status_pending = False
+                await asyncio.wait_for(
+                    ws.send_json(
+                        {
+                            "type": "status",
+                            "state": "waiting",
+                            "publishers": slot.publishers,
+                            "message": "No publisher detected"
+                            if slot.publishers == 0
+                            else (
+                                "Publisher present; frames received"
+                                if slot.frame and time.monotonic() - slot.frame[4] <= 2
+                                else "Publisher present; waiting for usable frames"
+                            ),
+                        }
+                    ),
+                    2,
+                )
+                if slot.errors or slot.error_overflow or (slot.frame and slot.frame[0] > last):
+                    slot.event.set()
+                continue
+            if slot.errors or slot.error_overflow:
+                if slot.errors:
+                    message = slot.errors.popleft()
+                else:
+                    message = f"{slot.error_overflow} additional diagnostic events omitted"
+                    slot.error_overflow = 0
+                await asyncio.wait_for(ws.send_json({"type": "error", "message": message}), 2)
+                if slot.errors or slot.error_overflow or (slot.frame and slot.frame[0] > last):
+                    slot.event.set()
+                if slot.fatal and not slot.errors and not slot.error_overflow:
                     break
                 continue
             if not slot.frame or slot.frame[0] <= last:
@@ -242,6 +301,7 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
                         "fps": round(sent_count / elapsed, 2) if sent_count else None,
                         "bandwidth_bps": round(sent_bytes / elapsed) if sent_count else None,
                         "dropped": dropped,
+                        "acknowledged_frames": acknowledged,
                         "frame_age_ms": round((time.monotonic() - created) * 1000),
                         "calibration": slot.native_meta.get("calibration")
                         if source == "native"
@@ -258,6 +318,12 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
                         "invalid_frames": slot.native_meta.get("invalid_frames")
                         if source == "native"
                         else None,
+                        "throttled_frames": slot.native_meta.get("throttled_frames")
+                        if source == "native"
+                        else None,
+                        "diagnostic_overflow": slot.native_meta.get("diagnostic_overflow")
+                        if source == "native"
+                        else None,
                         "lab_peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
                         "lab_cpu_pct": round((time.process_time() - cpu_started) / elapsed * 100, 2)
                         if sent_count
@@ -272,9 +338,17 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
             sent_count += 1
             sent_bytes += len(data)
             last = seq
-            message = await asyncio.wait_for(ws.receive_text(), ACK_TIMEOUT)
+            try:
+                message = await asyncio.wait_for(ws.receive_text(), ACK_TIMEOUT)
+            except asyncio.TimeoutError:
+                ack_totals["timeouts"] += 1
+                raise
             if message != f"ack:{seq}":
+                ack_totals["invalid"] += 1
+                await ws.send_json({"type": "error", "message": "Invalid frame acknowledgement"})
                 break
+            acknowledged += 1
+            ack_totals["acknowledged"] += 1
     except (WebSocketDisconnect, asyncio.TimeoutError, RuntimeError):
         pass
     finally:
@@ -292,6 +366,7 @@ async def preview(ws: WebSocket, view: str, source: str = "synthetic", image_for
                     logging.getLogger(__name__).exception("Synthetic producer failed")
         finally:
             clients.discard(ws)
+            client_sources.pop(ws, None)
         if ws.client_state == WebSocketState.CONNECTED:
             with suppress(RuntimeError):
                 await ws.close()

@@ -21,11 +21,15 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command: ".venv-recovered/bin/python prototype/camera_lab/server.py",
-    cwd: fileURLToPath(new URL("../..", import.meta.url)),
-    url: "http://127.0.0.1:18100/lab/status",
-    reuseExistingServer: false,
-    timeout: 15000,
-  },
+  webServer:
+    process.env.RDK_LAB_EXTERNAL === "1"
+      ? undefined
+      : {
+          command:
+            '"${RDK_TEST_PYTHON:-.venv-recovered/bin/python}" prototype/camera_lab/server.py',
+          cwd: fileURLToPath(new URL("../..", import.meta.url)),
+          url: "http://127.0.0.1:18100/lab/status",
+          reuseExistingServer: false,
+          timeout: 15000,
+        },
 });

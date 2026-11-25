@@ -1,0 +1,7 @@
+# Backend startup robustness
+
+On an initial synthetic ROS collector exception, the old monitor emitted a sample without `ros2` and `cameras`; section routes raised `KeyError` and returned HTTP 500. `tests/unit/test_b3_review.py` reproduced this before the correction. The monitor now starts with the existing graph adapter's explicitly unavailable measurements, supplies unavailable service metrics when absent, and refreshes graph and services independently. A failure retains the last data for that collector. No camera, service state, or graph value is invented.
+
+The asynchronous shutdown previously called `ThreadPoolExecutor.shutdown(wait=True)` on the event loop; a blocked synthetic worker demonstrated the loop stall. Shutdown and hardware close now execute off the loop, in order. Shutdown still waits for in-flight work: Python cannot safely terminate a stuck thread, so overall process shutdown is not guaranteed to have a fixed deadline. Existing bounded subprocess behavior remains unchanged.
+
+Production host defaults now contain only loopback names; tests explicitly supply their test hosts. The lab WebSocket similarly accepts its loopback hosts only. The dashboard rejects structurally incomplete snapshots with an unavailable indication and retains its last accepted sample; it does not synthesize measurements. A React error boundary limits unexpected rendering errors to an explicit reload message. Partial snapshots are not rendered field-by-field: this remains an intentional limitation.

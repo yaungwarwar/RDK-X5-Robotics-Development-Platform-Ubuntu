@@ -15,7 +15,7 @@ class Settings(BaseModel):
     interval_seconds: float = Field(default=1.0, ge=0.2, le=60.0)
     stale_after_seconds: float = Field(default=5.0, ge=1.0, le=300.0)
     history_size: int = Field(default=60, ge=1, le=600)
-    allowed_hosts: list[str] = ["localhost", "127.0.0.1", "testserver"]
+    allowed_hosts: list[str] = ["localhost", "127.0.0.1"]
     allowed_origins: list[str] = ["http://localhost:8088", "http://127.0.0.1:8088"]
     ros2_enabled: bool = False
     ros2_interval_seconds: float = Field(default=10.0, ge=5.0, le=300.0)

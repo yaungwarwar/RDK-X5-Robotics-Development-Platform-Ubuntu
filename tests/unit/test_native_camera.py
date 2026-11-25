@@ -67,7 +67,7 @@ def test_calibration_reports_actual_values_and_rejects_nan():
         k=[1, 0, 0, 0, 1, 0, 0, 0, 1],
         d=[0.1, 0.2],
     )
-    assert worker.calibration(m)["calibrated"] is True
+    assert worker.calibration(m)["intrinsics_present"] is True
     m.k[0] = float("nan")
     with pytest.raises(ValueError):
         worker.calibration(m)
@@ -159,14 +159,15 @@ def test_broker_native_ipc_frame_calibration_and_disconnect(monkeypatch):
         [sys.executable, str(ROOT / "tests/fixtures/native_camera_fake.py"), "frame"]
     )
     monkeypatch.setattr(lab, "native", active)
-    with TestClient(lab.app) as client:
+    with TestClient(lab.app, base_url="http://localhost:18100") as client:
         with client.websocket_connect(
-            "/lab/preview/left?source=native", headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/left?source=native",
+            headers={"origin": "http://localhost:18100"},
         ) as ws:
             assert ws.receive_json()["type"] == "status"
             frame = ws.receive_json()
             assert frame["source"] == "native" and frame["mime"] == "image/png"
-            assert frame["calibration"]["/image_left_raw/camera_info"]["calibrated"]
+            assert frame["calibration"]["/image_left_raw/camera_info"]["intrinsics_present"]
             assert ws.receive_bytes().startswith(b"\x89PNG")
             ws.send_text(f"ack:{frame['sequence']}")
         deadline = time.monotonic() + 5
@@ -182,9 +183,10 @@ def test_native_start_failure_does_not_fallback(monkeypatch):
         [sys.executable, str(ROOT / "tests/fixtures/native_camera_fake.py"), "startup_fail"]
     )
     monkeypatch.setattr(lab, "native", failed)
-    with TestClient(lab.app) as client:
+    with TestClient(lab.app, base_url="http://localhost:18100") as client:
         with client.websocket_connect(
-            "/lab/preview/left?source=native", headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/left?source=native",
+            headers={"origin": "http://localhost:18100"},
         ) as ws:
             error = ws.receive_json()
             assert error["type"] == "error" and "Native worker unavailable" in error["message"]
@@ -201,7 +203,9 @@ def test_actual_system_python_worker_with_mocked_ros_interfaces(monkeypatch):
         try:
             await asyncio.wait_for(slot.event.wait(), 4)
             assert slot.native_meta["encoding"] == "rgb8"
-            assert slot.native_meta["calibration"]["/image_left_raw/camera_info"]["calibrated"]
+            assert slot.native_meta["calibration"]["/image_left_raw/camera_info"][
+                "intrinsics_present"
+            ]
             assert slot.frame[1].startswith(b"\x89PNG")
         finally:
             await s.stop()
@@ -238,9 +242,10 @@ def test_disconnect_during_startup_cleans_up_worker(monkeypatch):
         [sys.executable, str(ROOT / "tests/fixtures/native_camera_fake.py"), "hang"]
     )
     monkeypatch.setattr(lab, "native", active)
-    with TestClient(lab.app) as client:
+    with TestClient(lab.app, base_url="http://localhost:18100") as client:
         with client.websocket_connect(
-            "/lab/preview/left?source=native", headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/left?source=native",
+            headers={"origin": "http://localhost:18100"},
         ):
             time.sleep(0.1)
         deadline = time.monotonic() + 5

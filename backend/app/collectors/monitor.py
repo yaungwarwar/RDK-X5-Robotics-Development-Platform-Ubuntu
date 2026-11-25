@@ -6,7 +6,8 @@ import time
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
-from app.models.telemetry import freshen, now
+from app.models.telemetry import freshen, metric, now
+from app.adapters.ros2 import graph_result
 
 
 class Monitor:
@@ -17,7 +18,7 @@ class Monitor:
         self.sequence = 0
         self.task = None
         self.slow_task = None
-        self.auxiliary = {}
+        self.auxiliary = graph_result(reason="Auxiliary discovery has not succeeded")
         self.executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="rdk-sampler")
         self.error = None
 
@@ -26,6 +27,13 @@ class Monitor:
         try:
             data = self.hardware.collect()
             data.update(self.auxiliary)
+            data.setdefault(
+                "services",
+                {
+                    name: metric(None, "state", "service collector", "Not collected")
+                    for name in ("docker", "containerd", "inventory")
+                },
+            )
             self.sequence += 1
             sample = {
                 "version": VERSION,
@@ -45,13 +53,17 @@ class Monitor:
             self.error = "Collection failed; last successful readings retained"
 
     def sample_auxiliary(self):
+        data = dict(self.auxiliary)
         try:
-            data = self.ros2.collect()
+            data.update(self.ros2.collect())
+        except Exception:
+            logging.exception("Auxiliary graph collection failed; cached graph retained")
+        try:
             if callable(getattr(self.hardware, "services", None)):
                 data["services"] = self.hardware.services()
-            self.auxiliary = data
         except Exception:
-            logging.exception("Auxiliary collection failed; cached graph retained")
+            logging.exception("Service collection failed; cached services retained")
+        self.auxiliary = data
 
     async def start(self):
         loop = asyncio.get_running_loop()
@@ -81,9 +93,13 @@ class Monitor:
                     await task
                 except asyncio.CancelledError:
                     pass
-        self.executor.shutdown(wait=True, cancel_futures=True)
-        if callable(getattr(self.hardware, "close", None)):
-            self.hardware.close()
+
+        def shutdown():
+            self.executor.shutdown(wait=True, cancel_futures=True)
+            if callable(getattr(self.hardware, "close", None)):
+                self.hardware.close()
+
+        await asyncio.to_thread(shutdown)
 
     def snapshot(self):
         latest = self.latest

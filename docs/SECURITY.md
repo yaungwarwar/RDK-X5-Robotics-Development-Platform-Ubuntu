@@ -1,5 +1,7 @@
 # Security
 
+**Current scope:** v0.1.3 was last observed running on the target; v0.2.0 is workstation development. The notes below include historical v0.1.x evidence and are not a current physical security assessment. The application still lacks authentication and TLS. See the [findings register](ENGINEERING_FINDINGS_REGISTER.md), [current status](IMPLEMENTATION_STATUS.md) and [unified QA guide](UNIFIED_QA_GUIDE.md). Restrict operational paths, addresses, host inventories, transaction IDs, backup contents and logs to private operator records before publishing documentation.
+
 The user reports successful local workstation proxy, origin, mutation and
 security-header validation for the 0.1.2 release candidate; physical acceptance
 is pending. The fixed `systemctl show` subprocess has a one-second timeout but
@@ -22,13 +24,13 @@ The default deployment binds dashboard 127.0.0.1:8088 and backend 127.0.0.1:8089
 - Nginx runs uid/gid 101 with all capabilities dropped, no-new-privileges, read-only root, bounded tmpfs and resource limits. No privileged mode, hardware devices, host filesystem tree or Docker socket mount. Host networking is needed only to reach the native loopback backend; it is not network isolation.
 - No Docker API calls, TCP endpoints or socket-based inventory. Systemd state is queried without changing services.
 - No telemetry persistence by default, no remote fonts or analytics, no stored secrets. OpenTelemetry API is a transitive FastAPI dependency; no exporter or remote telemetry is configured.
-- History/client buffering is bounded. Failed collection retains aging data visibly. Shutdown and reconnect behavior are tested.
+- Collector history is bounded and failed collection retains aging data visibly. The telemetry WebSocket currently has no explicit application-level client-count limit; per-client snapshot and serialization costs remain under review. Shutdown and reconnect behavior are tested locally.
 
 A local process running as the same user or root remains trusted and can edit source/config, access loopback or impersonate a frontend client. Docker group membership already grants extensive host privileges; this project does not add it or alter Docker daemon settings. A compromised frontend container has host network visibility despite lacking privileges. Never assume this dashboard can secure an otherwise untrusted host.
 
 ## Operation and maintenance
 
-Keep the source and config writable only by the target operator. Keep SSH credentials outside the project. Python dependencies are installed into an isolated venv with access to system packages only for vendor compatibility; no global sudo pip. Review dependency updates and re-run tests before deployment. Frontend uses a lockfile; runtime Python versions and relevant transitives are pinned. Container base tags are multi-architecture tags and should be rebuilt/scanned before a production installation; a Docker-image vulnerability scan was not possible in this session.
+Keep the source and config writable only by the target operator. Keep SSH credentials outside the project. The application venv is isolated from system site packages; the separate native system-Python worker accesses ROS/vendor packages. Do not use global sudo pip. Review dependency updates and re-run tests before deployment. Frontend uses a lockfile; Python pins are not hash-locked. Container base tags are multi-architecture tags and should be digest-pinned and scanned; see the [release reproducibility plan](RELEASE_REPRODUCIBILITY_PLAN.md).
 
 The installer refuses non-ARM64/non-X5/non-Ubuntu-22.04 environments, root execution, the wrong user/path, an existing virtual environment or an existing service unit. It never runs automatically. A failed install may leave a new venv/image; remove only this application's failed artifacts after inspection and retry. It does not install OS packages or modify vendor/ROS2/Docker configuration.
 

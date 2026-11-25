@@ -1,5 +1,7 @@
 # Manual v0.1.2 → v0.1.3 upgrade (development)
 
+> Historical operator procedure: target-specific paths and addresses belong in private operator records; review and redact a copy before publication.
+
 The user reports v0.1.2 is physically active on the RDK X5. The v0.1.3 release is not physically validated; do not deploy until the requested local validation and release artifact are complete. Preserve `/home/sunrise/rdk-backups/before-0.1.2` and all older transactions. Use a fresh staging tree and backup. This upgrade supports only 0.1.2 → 0.1.3, with rollback to 0.1.2. Use the active generated compatibility deployment, not the old base Compose file. Preparation resolves `.deployment/active.json`, validates the path, and rejects an explicit mismatching `--compose-file`.
 
 After a release archive and checksum have been verified and transferred manually to `/home/sunrise/rdk-incoming`:

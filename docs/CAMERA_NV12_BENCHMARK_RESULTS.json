@@ -1,0 +1,907 @@
+{
+  "fixture": "synthetic NV12 1088x1280 stride 1088, deterministic seed 20261125",
+  "warmup": 3,
+  "iterations": 12,
+  "results": [
+    {
+      "variant": "baseline",
+      "detail": "low",
+      "offered": 12,
+      "processed": 12,
+      "intentionally_throttled": 0,
+      "width": 1088,
+      "height": 1280,
+      "samples": [
+        {
+          "cpu_ms": 1.7427490000000017,
+          "wall_ms": 1.7426209997211117,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7292130000000003,
+          "wall_ms": 1.7295269972237293,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7400939999999976,
+          "wall_ms": 1.7404669997631572,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7185629999999994,
+          "wall_ms": 1.718856001389213,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.727348999999996,
+          "wall_ms": 1.7345059968647547,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7154170000000037,
+          "wall_ms": 1.7157399997813627,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7188430000000046,
+          "wall_ms": 1.7191369988722727,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7066509999999966,
+          "wall_ms": 1.7070629983209074,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7387410000000019,
+          "wall_ms": 1.7393050002283417,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7102880000000042,
+          "wall_ms": 1.71058100022492,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7129229999999982,
+          "wall_ms": 1.7132960019807797,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7060900000000003,
+          "wall_ms": 1.7063630002667196,
+          "bytes": 8644
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 17216,
+      "sampled_peak_rss_kib": 17024,
+      "browser_decode": {
+        "success": true,
+        "width": 1088,
+        "height": 1280
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 4,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 1.719,
+      "cpu_ms_p95": 1.74,
+      "wall_ms_median": 1.719,
+      "wall_ms_p95": 1.74,
+      "bytes_median": 8644.0,
+      "bytes_p95": 8644
+    },
+    {
+      "variant": "reduced_rate",
+      "detail": "low",
+      "offered": 24,
+      "processed": 12,
+      "intentionally_throttled": 12,
+      "width": 1088,
+      "height": 1280,
+      "samples": [
+        {
+          "cpu_ms": 1.8656690000000005,
+          "wall_ms": 1.86554299943964,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7533679999999983,
+          "wall_ms": 1.7536820014356636,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7462850000000003,
+          "wall_ms": 1.7467089965066407,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7053679999999987,
+          "wall_ms": 1.7056010001397226,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7058190000000042,
+          "wall_ms": 1.7134859990619589,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7023330000000003,
+          "wall_ms": 1.7026749992510304,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7067109999999996,
+          "wall_ms": 1.7070840003725607,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7032950000000004,
+          "wall_ms": 1.703637000900926,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 2.122531000000004,
+          "wall_ms": 2.1292210003593937,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.9715869999999969,
+          "wall_ms": 1.9769729988183826,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.8679539999999981,
+          "wall_ms": 1.868248000391759,
+          "bytes": 8644
+        },
+        {
+          "cpu_ms": 1.7424689999999965,
+          "wall_ms": 1.7427310012863018,
+          "bytes": 8644
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 47144,
+      "sampled_peak_rss_kib": 17068,
+      "browser_decode": {
+        "success": true,
+        "width": 1088,
+        "height": 1280
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 4,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 1.744,
+      "cpu_ms_p95": 1.972,
+      "wall_ms_median": 1.745,
+      "wall_ms_p95": 1.977,
+      "bytes_median": 8644.0,
+      "bytes_p95": 8644
+    },
+    {
+      "variant": "half_resolution",
+      "detail": "low",
+      "offered": 12,
+      "processed": 12,
+      "intentionally_throttled": 0,
+      "width": 544,
+      "height": 640,
+      "samples": [
+        {
+          "cpu_ms": 2.7909850000000027,
+          "wall_ms": 2.790680002362933,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.764054000000002,
+          "wall_ms": 2.7644210022117477,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.757472000000004,
+          "wall_ms": 2.75780900119571,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.7541460000000058,
+          "wall_ms": 2.7545519988052547,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.7615090000000024,
+          "wall_ms": 2.761905998340808,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.7671400000000013,
+          "wall_ms": 2.767546997347381,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.758504000000002,
+          "wall_ms": 2.7588610028033145,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.751951999999995,
+          "wall_ms": 2.7523179996933322,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.760296999999995,
+          "wall_ms": 2.7606840012595057,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.7553579999999993,
+          "wall_ms": 2.7556640015973244,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.7577119999999953,
+          "wall_ms": 2.7580989990383387,
+          "bytes": 3403
+        },
+        {
+          "cpu_ms": 2.751261000000005,
+          "wall_ms": 2.751596999587491,
+          "bytes": 3403
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 47144,
+      "sampled_peak_rss_kib": 17184,
+      "browser_decode": {
+        "success": true,
+        "width": 544,
+        "height": 640
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 4,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 2.758,
+      "cpu_ms_p95": 2.767,
+      "wall_ms_median": 2.758,
+      "wall_ms_p95": 2.768,
+      "bytes_median": 3403.0,
+      "bytes_p95": 3403
+    },
+    {
+      "variant": "png_level_1",
+      "detail": "low",
+      "offered": 12,
+      "processed": 12,
+      "intentionally_throttled": 0,
+      "width": 1088,
+      "height": 1280,
+      "samples": [
+        {
+          "cpu_ms": 1.7479980000000006,
+          "wall_ms": 1.747791000525467,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.7049279999999944,
+          "wall_ms": 1.705201000731904,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.7153270000000025,
+          "wall_ms": 1.7157410002255347,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.7014810000000047,
+          "wall_ms": 1.7018340004142374,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.6990470000000022,
+          "wall_ms": 1.699409000138985,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.702071999999999,
+          "wall_ms": 1.702385998214595,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.7336019999999939,
+          "wall_ms": 1.734304998535663,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 2.1746490000000005,
+          "wall_ms": 2.187861999118468,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.9551780000000019,
+          "wall_ms": 1.9557230007194448,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.8425649999999973,
+          "wall_ms": 1.8649120029294863,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.7185829999999958,
+          "wall_ms": 1.7190569997183047,
+          "bytes": 8082
+        },
+        {
+          "cpu_ms": 1.6989159999999948,
+          "wall_ms": 1.6993190001812764,
+          "bytes": 8082
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 47144,
+      "sampled_peak_rss_kib": 17084,
+      "browser_decode": {
+        "success": true,
+        "width": 1088,
+        "height": 1280
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 4,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 1.717,
+      "cpu_ms_p95": 1.955,
+      "wall_ms_median": 1.717,
+      "wall_ms_p95": 1.956,
+      "bytes_median": 8082.0,
+      "bytes_p95": 8082
+    },
+    {
+      "variant": "png_level_6",
+      "detail": "low",
+      "offered": 12,
+      "processed": 12,
+      "intentionally_throttled": 0,
+      "width": 1088,
+      "height": 1280,
+      "samples": [
+        {
+          "cpu_ms": 6.550647,
+          "wall_ms": 6.550772002810845,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.492848000000002,
+          "wall_ms": 6.4934530018945225,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.529876999999989,
+          "wall_ms": 6.530242997541791,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.441312000000004,
+          "wall_ms": 6.442907997552538,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.545166000000005,
+          "wall_ms": 6.545511001604609,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.433517,
+          "wall_ms": 6.433791000745259,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.594157999999989,
+          "wall_ms": 6.594495000172174,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.445229000000011,
+          "wall_ms": 6.44995099719381,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.546578999999997,
+          "wall_ms": 6.5470250010548625,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.430600999999994,
+          "wall_ms": 6.430935001844773,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.533404000000006,
+          "wall_ms": 6.533718998980476,
+          "bytes": 5203
+        },
+        {
+          "cpu_ms": 6.540096000000009,
+          "wall_ms": 6.540643000334967,
+          "bytes": 5203
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 47144,
+      "sampled_peak_rss_kib": 17100,
+      "browser_decode": {
+        "success": true,
+        "width": 1088,
+        "height": 1280
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 4,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 6.532,
+      "cpu_ms_p95": 6.551,
+      "wall_ms_median": 6.532,
+      "wall_ms_p95": 6.551,
+      "bytes_median": 5203.0,
+      "bytes_p95": 5203
+    },
+    {
+      "variant": "baseline",
+      "detail": "high",
+      "offered": 12,
+      "processed": 12,
+      "intentionally_throttled": 0,
+      "width": 1088,
+      "height": 1280,
+      "samples": [
+        {
+          "cpu_ms": 23.07799499999999,
+          "wall_ms": 23.078484999132343,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.57867799999999,
+          "wall_ms": 22.606744001677725,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.29921800000001,
+          "wall_ms": 21.299876003467944,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.654010000000003,
+          "wall_ms": 22.655094999208814,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.235599999999994,
+          "wall_ms": 21.249200002785074,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.71036500000001,
+          "wall_ms": 22.711472000082722,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.22371700000003,
+          "wall_ms": 21.22457299992675,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.611199000000028,
+          "wall_ms": 22.630108000157634,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.210251999999986,
+          "wall_ms": 21.21101800003089,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.605278000000006,
+          "wall_ms": 22.60618299987982,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.228356000000005,
+          "wall_ms": 21.229142999800388,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.576293999999997,
+          "wall_ms": 22.577237999939825,
+          "bytes": 1394408
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 47144,
+      "sampled_peak_rss_kib": 22516,
+      "browser_decode": {
+        "success": true,
+        "width": 1088,
+        "height": 1280
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 2,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 22.577,
+      "cpu_ms_p95": 22.71,
+      "wall_ms_median": 22.592,
+      "wall_ms_p95": 22.711,
+      "bytes_median": 1394408.0,
+      "bytes_p95": 1394408
+    },
+    {
+      "variant": "reduced_rate",
+      "detail": "high",
+      "offered": 24,
+      "processed": 12,
+      "intentionally_throttled": 12,
+      "width": 1088,
+      "height": 1280,
+      "samples": [
+        {
+          "cpu_ms": 23.110234999999992,
+          "wall_ms": 23.11669700065977,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.555565000000026,
+          "wall_ms": 22.556479001650587,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.25390299999999,
+          "wall_ms": 21.2547609989997,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.583587000000016,
+          "wall_ms": 22.592356999666663,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.24917499999998,
+          "wall_ms": 21.250091998808784,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.565753999999995,
+          "wall_ms": 22.566597999684745,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.22599199999997,
+          "wall_ms": 21.232237999356585,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.51371599999996,
+          "wall_ms": 22.514619002322434,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.294489000000027,
+          "wall_ms": 21.295567999914056,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.734522000000034,
+          "wall_ms": 22.74939400012954,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.25051699999997,
+          "wall_ms": 21.251294001558563,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.501523999999996,
+          "wall_ms": 22.50232700316701,
+          "bytes": 1394408
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 58480,
+      "sampled_peak_rss_kib": 22588,
+      "browser_decode": {
+        "success": true,
+        "width": 1088,
+        "height": 1280
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 2,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 22.508,
+      "cpu_ms_p95": 22.735,
+      "wall_ms_median": 22.508,
+      "wall_ms_p95": 22.749,
+      "bytes_median": 1394408.0,
+      "bytes_p95": 1394408
+    },
+    {
+      "variant": "half_resolution",
+      "detail": "high",
+      "offered": 12,
+      "processed": 12,
+      "intentionally_throttled": 0,
+      "width": 544,
+      "height": 640,
+      "samples": [
+        {
+          "cpu_ms": 7.4381710000000005,
+          "wall_ms": 7.438116997946054,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.417913000000012,
+          "wall_ms": 7.418419998430181,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.70949,
+          "wall_ms": 7.710551999480231,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 10.00388399999999,
+          "wall_ms": 10.018519998993725,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.5059780000000105,
+          "wall_ms": 7.506697002099827,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.417482000000003,
+          "wall_ms": 7.417928998620482,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.421318999999996,
+          "wall_ms": 7.421706002787687,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.422882000000006,
+          "wall_ms": 7.431545000144979,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.418523999999996,
+          "wall_ms": 7.4190209998050705,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.409578,
+          "wall_ms": 7.410084999719402,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.413685000000003,
+          "wall_ms": 7.414192998112412,
+          "bytes": 348973
+        },
+        {
+          "cpu_ms": 7.411490999999993,
+          "wall_ms": 7.4120780009252485,
+          "bytes": 348973
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 58624,
+      "sampled_peak_rss_kib": 18696,
+      "browser_decode": {
+        "success": true,
+        "width": 544,
+        "height": 640
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 4,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 7.42,
+      "cpu_ms_p95": 7.709,
+      "wall_ms_median": 7.42,
+      "wall_ms_p95": 7.711,
+      "bytes_median": 348973.0,
+      "bytes_p95": 348973
+    },
+    {
+      "variant": "png_level_1",
+      "detail": "high",
+      "offered": 12,
+      "processed": 12,
+      "intentionally_throttled": 0,
+      "width": 1088,
+      "height": 1280,
+      "samples": [
+        {
+          "cpu_ms": 23.278461,
+          "wall_ms": 23.285986000701087,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.655131999999995,
+          "wall_ms": 22.656086999631952,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.406589000000004,
+          "wall_ms": 21.40752899867948,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.750030000000006,
+          "wall_ms": 22.75128700057394,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.389627999999995,
+          "wall_ms": 21.39045599687961,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.695146,
+          "wall_ms": 22.71820399982971,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.41485499999998,
+          "wall_ms": 21.415765000710962,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 23.045625000000015,
+          "wall_ms": 23.051624000800075,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.435303999999988,
+          "wall_ms": 21.451241002068855,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.680790000000005,
+          "wall_ms": 22.681716000079177,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 21.378176999999997,
+          "wall_ms": 21.378974997787736,
+          "bytes": 1394408
+        },
+        {
+          "cpu_ms": 22.633981999999996,
+          "wall_ms": 22.64179099802277,
+          "bytes": 1394408
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 58624,
+      "sampled_peak_rss_kib": 22572,
+      "browser_decode": {
+        "success": true,
+        "width": 1088,
+        "height": 1280
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 2,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 22.645,
+      "cpu_ms_p95": 23.046,
+      "wall_ms_median": 22.649,
+      "wall_ms_p95": 23.052,
+      "bytes_median": 1394408.0,
+      "bytes_p95": 1394408
+    },
+    {
+      "variant": "png_level_6",
+      "detail": "high",
+      "offered": 12,
+      "processed": 12,
+      "intentionally_throttled": 0,
+      "width": 1088,
+      "height": 1280,
+      "samples": [
+        {
+          "cpu_ms": 24.21709100000001,
+          "wall_ms": 24.217445999966003,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 23.654395999999995,
+          "wall_ms": 23.655254000914283,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 22.389473999999993,
+          "wall_ms": 22.39704800012987,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 23.739234999999997,
+          "wall_ms": 23.740093998640077,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 22.374875999999986,
+          "wall_ms": 22.381218001100933,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 23.84940199999999,
+          "wall_ms": 23.85031200174126,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 22.350721000000018,
+          "wall_ms": 22.35156199822086,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 23.893354000000034,
+          "wall_ms": 23.909264000394614,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 22.372842000000006,
+          "wall_ms": 22.373703999619465,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 23.884558,
+          "wall_ms": 23.885507998784306,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 22.35038,
+          "wall_ms": 22.364175998518476,
+          "bytes": 1394413
+        },
+        {
+          "cpu_ms": 23.77723599999998,
+          "wall_ms": 23.778275997756282,
+          "bytes": 1394413
+        }
+      ],
+      "child_reported_ru_maxrss_kib": 60204,
+      "sampled_peak_rss_kib": 22508,
+      "browser_decode": {
+        "success": true,
+        "width": 1088,
+        "height": 1280
+      },
+      "ipc_broker_exercise": {
+        "diagnostic_received": true,
+        "frames_acknowledged": 2,
+        "broker_dropped": 2,
+        "worker_cleaned": true
+      },
+      "cpu_ms_median": 23.697,
+      "cpu_ms_p95": 23.893,
+      "wall_ms_median": 23.698,
+      "wall_ms_p95": 23.909,
+      "bytes_median": 1394413.0,
+      "bytes_p95": 1394413
+    }
+  ]
+}

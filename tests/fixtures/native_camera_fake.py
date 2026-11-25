@@ -30,6 +30,10 @@ if args.mode == "stubborn":
 if args.mode == "crash":
     time.sleep(0.1)
     sys.exit(3)
+if args.mode in ("publisher0", "publisher1"):
+    sys.stdout.buffer.write(pack_record({"type": "status", "publishers": int(args.mode[-1])}))
+    sys.stdout.buffer.flush()
+    time.sleep(30)
 if args.mode == "frame":
     frame, mime, w, h, encoding = raw_to_png(
         SimpleNamespace(
@@ -51,7 +55,7 @@ if args.mode == "frame":
                 "model": "plumb_bob",
                 "k": [1, 0, 0, 0, 1, 0, 0, 0, 1],
                 "d": [],
-                "calibrated": True,
+                "intrinsics_present": True,
             }
         },
     }

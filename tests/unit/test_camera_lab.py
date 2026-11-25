@@ -31,9 +31,9 @@ def test_frame_validation_and_single_latest_slot():
 
 @pytest.mark.parametrize("view", ["left", "right", "combined"])
 def test_start_stop_and_switch(view):
-    with TestClient(lab.app) as c:
+    with TestClient(lab.app, base_url="http://localhost:18100") as c:
         with c.websocket_connect(
-            "/lab/preview/" + view, headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/" + view, headers={"origin": "http://localhost:18100"}
         ) as ws:
             m = ws.receive_json()
             assert m["source"] == "synthetic" and m["view"] == view
@@ -44,24 +44,32 @@ def test_start_stop_and_switch(view):
 
 
 def test_bad_origin_and_client_limit():
-    with TestClient(lab.app) as c:
+    with TestClient(lab.app, base_url="http://localhost:18100") as c:
         with pytest.raises(WebSocketDisconnect):
-            with c.websocket_connect("/lab/preview/left", headers={"origin": "http://evil.test"}):
+            with c.websocket_connect(
+                "ws://localhost:18100/lab/preview/left", headers={"origin": "http://evil.test"}
+            ):
                 pass
-        with c.websocket_connect("/lab/preview/left", headers={"origin": "http://testserver"}):
-            with c.websocket_connect("/lab/preview/right", headers={"origin": "http://testserver"}):
+        with c.websocket_connect(
+            "ws://localhost:18100/lab/preview/left", headers={"origin": "http://localhost:18100"}
+        ):
+            with c.websocket_connect(
+                "ws://localhost:18100/lab/preview/right",
+                headers={"origin": "http://localhost:18100"},
+            ):
                 with pytest.raises(WebSocketDisconnect):
                     with c.websocket_connect(
-                        "/lab/preview/combined", headers={"origin": "http://testserver"}
+                        "ws://localhost:18100/lab/preview/combined",
+                        headers={"origin": "http://localhost:18100"},
                     ):
                         pass
     assert not lab.clients
 
 
 def test_slow_client_drops_old_frames_and_disconnect_reconnect():
-    with TestClient(lab.app) as c:
+    with TestClient(lab.app, base_url="http://localhost:18100") as c:
         with c.websocket_connect(
-            "/lab/preview/left", headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/left", headers={"origin": "http://localhost:18100"}
         ) as ws:
             first = ws.receive_json()
             ws.receive_bytes()
@@ -73,7 +81,7 @@ def test_slow_client_drops_old_frames_and_disconnect_reconnect():
             assert second["dropped"] >= 2
         assert not lab.clients
         with c.websocket_connect(
-            "/lab/preview/right", headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/right", headers={"origin": "http://localhost:18100"}
         ) as ws:
             assert ws.receive_json()["view"] == "right"
             ws.receive_bytes()
@@ -99,11 +107,16 @@ def test_existing_mock_telemetry_continues_while_preview_is_active():
     from app.config.settings import Settings
     from app.main import create_app
 
-    telemetry = create_app(Settings(mode="mock", interval_seconds=0.2))
-    with TestClient(telemetry) as existing, TestClient(lab.app) as camera:
+    telemetry = create_app(
+        Settings(mode="mock", interval_seconds=0.2, allowed_hosts=["testserver"])
+    )
+    with (
+        TestClient(telemetry) as existing,
+        TestClient(lab.app, base_url="http://localhost:18100") as camera,
+    ):
         first = existing.get("/api/v1/snapshot").json()["sequence"]
         with camera.websocket_connect(
-            "/lab/preview/left", headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/left", headers={"origin": "http://localhost:18100"}
         ) as ws:
             m = ws.receive_json()
             ws.receive_bytes()
@@ -114,9 +127,10 @@ def test_existing_mock_telemetry_continues_while_preview_is_active():
 
 
 def test_unresponsive_client_is_closed_and_releases_source():
-    with TestClient(lab.app) as client:
+    with TestClient(lab.app, base_url="http://localhost:18100") as client:
+        before = client.get("/lab/status").json()["acknowledgements"]["timeouts"]
         with client.websocket_connect(
-            "/lab/preview/left", headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/left", headers={"origin": "http://localhost:18100"}
         ) as ws:
             ws.receive_json()
             ws.receive_bytes()
@@ -124,11 +138,12 @@ def test_unresponsive_client_is_closed_and_releases_source():
             with pytest.raises(WebSocketDisconnect):
                 ws.receive_text()
         assert not lab.clients
+        assert client.get("/lab/status").json()["acknowledgements"]["timeouts"] == before + 1
 
 
 def test_failed_handshake_releases_client_slot():
     class BrokenSocket:
-        headers = {"origin": "http://testserver", "host": "testserver"}
+        headers = {"origin": "http://localhost:18100", "host": "localhost:18100"}
 
         async def accept(self):
             raise RuntimeError("handshake failed")
@@ -144,9 +159,9 @@ def test_publisher_failure_disconnects_and_cleans_up(monkeypatch):
         raise RuntimeError("synthetic publisher disappeared")
 
     monkeypatch.setattr(lab, "produce", failed_producer)
-    with TestClient(lab.app) as client:
+    with TestClient(lab.app, base_url="http://localhost:18100") as client:
         with client.websocket_connect(
-            "/lab/preview/left", headers={"origin": "http://testserver"}
+            "ws://localhost:18100/lab/preview/left", headers={"origin": "http://localhost:18100"}
         ) as ws:
             with pytest.raises(WebSocketDisconnect):
                 ws.receive_text()

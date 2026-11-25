@@ -1,0 +1,40 @@
+# Engineering findings register
+
+This register covers the eight independent-review findings supplied in the Phase B.3 request and the available [local review](CAMERA_LOCAL_ENGINEERING_REVIEW.md). The full independent Claude review document is not present in this workspace; additional findings from that document cannot be inventoried or marked resolved without the source.
+
+| ID | Severity | Evidence and reproduction | Resolution and regression | Remaining limitation |
+|---|---|---|---|---|
+| ENG-001 | High | Initial auxiliary exception produced missing graph sections and HTTP 500; synthetic reproduction | Resolved locally: unavailable defaults and independent refresh; `test_b3_review.py` | Last accepted values can become stale; no target deployment |
+| ENG-002 | High | Missing telemetry fields caused blank React dashboard; mocked browser reproduction | Resolved locally: reject incomplete sample and show unavailable, plus error boundary; dashboard browser tests | Incomplete snapshots are rejected whole, not partially rendered |
+| ENG-003 | Medium | No error boundary; malformed synthetic cooling-device value crashed rendering | Resolved locally with explicit fallback; desktop/mobile dashboard tests | Boundary requires page reload after unexpected rendering error |
+| ENG-004 | Medium | Nonzero K[0] was labeled calibrated despite no independent validation; synthetic reproduction | Resolved locally: intrinsics-present wording and tests | No intrinsic accuracy or physical calibration validity established |
+| ENG-005 | Medium | Worker emitted publisher count but supervisor discarded heartbeat; local IPC reproduction | Resolved locally: validated counts and distinct absent/present-no-frame states; unit and browser tests | Publisher discovery is not proof of decodable images; count can become stale |
+| ENG-006 | Medium | Executor shutdown blocked event loop; synthetic stalled thread reproduction | Resolved locally: off-loop wait; unit regression | A genuinely stuck thread can still delay process exit |
+| ENG-007 | Medium | Settings default and lab host allowlist included `testserver`; local reproduction | Resolved locally: loopback production allowlists and explicit test hosts; security and test fixtures | No authentication or TLS; loopback and tunnel boundary remains essential |
+| ENG-008 | Medium | `/lab/status` reported synthetic for native fixture | Resolved locally in B.2; `test_camera_b2_diagnostics.py` | No physical validation of B.2/B.3 |
+| ENG-009 | Medium | Metrics had ambiguous scope and age provenance | Resolved locally in B.2; browser labels tested | No end-to-end capture timestamp, aggregate scope CPU or full browser/network accounting |
+| ENG-010 | Medium | Diagnostic replacement and pending-frame event ordering reproduced in synthetic B.2 | Resolved locally with bounded diagnostic queues and overflow notices; B.2 tests | Overflow and disconnect can still lose individual event details |
+| ENG-011 | Medium | Throttling, ACK and drop counts had incomplete attribution | Resolved locally in B.2; B.2 tests | DDS losses and publisher rate not measured |
+| QA-INFRA-001 | High | Historical runner accepted an older Nginx listener | Resolved locally in Phase A by owned-process/port guard and regression `test_qa_guard.py` | Guard is local QA infrastructure, not deployed monitoring |
+| ENG-012 | High | No verified target cgroup CPU-rate quota in historical scope probe | Known limitation; no corrective change | CPU time limit/nice do not enforce CPU rate; kernel/browser/DDS memory outside scope |
+| ENG-013 | High | Physical reconnect attempt previously failed; retest blocked by thermal margin | Physical validation pending; local fix tested | Continuous active cooling confirmation and separately appropriate authorization required |
+| ENG-014 | Medium | Right/combined, sustained resource and dynamic BPU workload tests not performed | Physical validation pending | No physical acceptance claim |
+| ENG-015 | Medium | Dedicated BPU temperature historical errno 110 | Known limitation; documented hardware evidence | CPU proxy remains explicitly attributed; sensor not repaired |
+| ENG-016 | Medium | systemctl subprocess fixed output-size limitation | Known limitation; historical review | No unrestricted refactor in this phase |
+| ENG-017 | Medium | ROS2 discovery repeatedly starts native subprocesses | Planned improvement; architectural observation | Startup overhead unmeasured in this phase |
+| ENG-018 | High | Authentication/TLS absent for dashboard | Known limitation; documented security boundary | Local loopback/SSH tunnel required; not a public service |
+| ENG-019 | Medium | Physical upgrade rollback remains untested | Physical validation pending; historical record | Do not claim physical rollback acceptance |
+| ENG-020 | Medium | NV12 benchmark and prior short physical left preview use grayscale luminance | Known limitation; reproducible synthetic and historical observation | Chroma/color visualization and sustained target cost remain unvalidated |
+| ENG-021 | Medium | Each WebSocket client calls snapshot/freshening and serializes telemetry; code inspection | Inferred risk; no per-client load reproduction | Measure concurrency cost before selecting a bound; no target performance claim |
+| ENG-022 | Medium | Backend telemetry WebSocket route has no explicit application client count; code inspection | Known limitation; no exhaustion experiment | Loopback/origin restrictions remain; assess bounded client admission |
+| ENG-023 | Medium | ROS graph model forbids extras and strictly bounds names, types and counts; `backend/app/adapters/ros2.py` | Planned improvement; strict validation is present, compatibility with every vendor graph not established | Reproduce actual rejected vendor graph before changing safety checks |
+| ENG-024 | Medium | Docker frontend base uses floating tags; Dockerfile inspection | Known limitation; [release plan](RELEASE_REPRODUCIBILITY_PLAN.md) | Digest pinning and ARM64 verification not yet implemented |
+| ENG-025 | Medium | Pinned Python dependencies have no complete hash lock; requirements inspection | Known limitation; release plan | Offline ARM64 wheel closure remains unverified |
+| ENG-026 | Medium | Transaction mechanism exists but explicit supported migration matrix is incomplete; code/docs inspection | Planned improvement; release plan | Avoid assuming unsupported upgrade paths and do not overwrite transactions |
+| ENG-027 | Medium | Existing systemd protections are retained; further candidates not compatibility-tested | Planned improvement; no additional hardening applied | Validate ROS2, device and service compatibility before any change |
+| ENG-028 | Low | Multiple historical acceptance/status/QA documents repeat facts with divergent timestamps | Planned improvement; canonical references documented | Preserve historical evidence; review operational details before publication |
+| ENG-029 | Medium | Past QA was spread across several commands, with possible stale browser builds and incomplete consolidated reporting | Resolved locally by B.4 unified runner and its tests | QA-INFRA-001 still relies on Linux `/proc`; no physical evidence |
+| ENG-030 | Medium | Full independent Claude review is not available in workspace | Known limitation | Only supplied findings and available reports were reconciled; unseen findings remain unknown |
+| QA-INCIDENT-001 | High | Instrumented reproduction showed TestClient session cancellation interrupting disconnect-helper cleanup; original JUnit captured the matching outer exception but no inner ASGI stack | Resolved locally by narrowly shielded helper cleanup; deterministic cancellation, real local WebSocket tests and B.4.1 repeatability | Attribution of the original occurrence is strongly supported, not proven; no physical validation claimed |
+
+Severity expresses local engineering priority, not production certification. Historical physical observations are not current health checks. Physical testing stays suspended.

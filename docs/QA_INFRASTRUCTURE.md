@@ -1,4 +1,6 @@
-# QA infrastructure — v0.1.3
+# QA infrastructure
+
+For current development validation use the [unified QA guide](UNIFIED_QA_GUIDE.md) and `./scripts/qa-full.sh`. The following v0.1.3 figures and commands are historical and do not represent the latest complete suite.
 
 On 2026-11-25 the Ubuntu 24.04 AMD64 workstation recovered persistent Python 3.10.22 under `.venv-qa-tools/python`, the isolated `.venv-recovered`, Nginx 1.24.0 under `.venv-qa-tools/nginx`, Compose 2.40.3 under `.venv-qa-tools/bin/docker-compose`, and downloaded dependency wheels under `.venv-qa-tools/wheels`. Chromium was reused from `/home/eve/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome`. DNS, HTTPS and local TCP sockets worked. These ignored development directories are not release artifacts.
 

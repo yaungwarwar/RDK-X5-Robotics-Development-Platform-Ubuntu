@@ -1,5 +1,11 @@
 import { version as releaseVersion } from "../package.json";
-import { StrictMode, useState, type ReactNode } from "react";
+import {
+  Component,
+  StrictMode,
+  useState,
+  type ErrorInfo,
+  type ReactNode,
+} from "react";
 import { createRoot } from "react-dom/client";
 import {
   Activity,
@@ -272,7 +278,14 @@ function App() {
   const [page, setPage] = useState("Overview");
   const [collapsed, setCollapsed] = useState(false);
   const [mobile, setMobile] = useState(false);
-  const { snapshot: s, history, connected, age, stale } = useTelemetry();
+  const {
+    snapshot: s,
+    history,
+    connected,
+    age,
+    stale,
+    invalid,
+  } = useTelemetry();
   const d = s?.data;
   const series = (get: (s: Snapshot) => number | null) =>
     history.map((x) => (x === null ? null : get(x)));
@@ -1046,7 +1059,8 @@ function App() {
             </div>
             <h3>Infrastructure for your robotics.</h3>
             <p>
-              Version {releaseVersion} · Independent application for D-Robotics RDK X5.
+              Version {releaseVersion} · Independent application for D-Robotics
+              RDK X5.
             </p>
             <p>
               A native Python agent keeps hardware interfaces and ROS2 on the
@@ -1233,6 +1247,11 @@ function App() {
                 : "Waiting for the native monitoring agent. Reconnection is automatic."}
             </div>
           )}
+          {invalid && (
+            <div className="connection-alert" role="alert">
+              Incomplete telemetry unavailable; waiting for a complete sample.
+            </div>
+          )}
           {content}
           <footer>
             <span>
@@ -1240,8 +1259,8 @@ function App() {
               the host
             </span>
             <span>
-              {s?.mode === "mock" ? "Mock fixtures" : "Local agent"} <i />{" "}
-              v{releaseVersion}
+              {s?.mode === "mock" ? "Mock fixtures" : "Local agent"} <i /> v
+              {releaseVersion}
             </span>
           </footer>
         </main>
@@ -1249,8 +1268,31 @@ function App() {
     </div>
   );
 }
+class DashboardBoundary extends Component<
+  { children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Dashboard rendering failed", error, info);
+  }
+  render() {
+    return this.state.failed ? (
+      <main role="alert">
+        Dashboard unavailable. Reload to retry; telemetry may be incomplete.
+      </main>
+    ) : (
+      this.props.children
+    );
+  }
+}
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <DashboardBoundary>
+      <App />
+    </DashboardBoundary>
   </StrictMode>,
 );

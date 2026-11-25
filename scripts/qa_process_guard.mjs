@@ -71,7 +71,12 @@ export function startOwned(bin, args, options = {}) {
 
 export async function runGuarded(bin, args, options, children) {
   assertOwned(children);
-  const child = startOwned(bin, args, { ...options, detached: true });
+  const { onOutput, ...spawnOptions } = options;
+  const child = startOwned(bin, args, { ...spawnOptions, detached: true });
+  if (onOutput) {
+    child.stdout?.on("data", (data) => onOutput("stdout", data));
+    child.stderr?.on("data", (data) => onOutput("stderr", data));
+  }
   const signalGroup = (signal) => {
     if (!child.pid) return;
     try { process.kill(-child.pid, signal); } catch (error) { if (error.code !== "ESRCH") throw error; }

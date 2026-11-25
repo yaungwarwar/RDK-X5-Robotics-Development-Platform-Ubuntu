@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import { browserStats, requireBrowserPass, requireUnchanged } from "../../scripts/qa_full_checks.mjs";
+const stats = (expected, unexpected, skipped, flaky) => browserStats({ stats: { expected, unexpected, skipped, flaky } });
+assert.equal(stats(16, 0, 0, 0).total, 16);
+requireBrowserPass(stats(16, 0, 0, 0));
+for (const test of [[0, 0, 0, 0], [15, 1, 0, 0], [15, 0, 1, 0], [15, 0, 0, 1]]) assert.throws(() => requireBrowserPass(stats(...test)));
+assert.throws(() => browserStats({ stats: { expected: 1 } }));
+requireUnchanged("fresh", "fresh", "stale");
+assert.throws(() => requireUnchanged("fresh", "modified", "stale"));
+assert.throws(() => requireUnchanged("", "", "stale"));

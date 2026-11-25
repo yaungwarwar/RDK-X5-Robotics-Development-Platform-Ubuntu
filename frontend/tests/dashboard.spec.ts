@@ -1,5 +1,55 @@
 import { test, expect } from "@playwright/test";
 
+test("incomplete telemetry remains usable and reports missing data", async ({
+  page,
+}) => {
+  await page.routeWebSocket("**/ws/v1/telemetry", (socket) => {
+    socket.send(
+      JSON.stringify({
+        version: "test",
+        mode: "mock",
+        sequence: 1,
+        timestamp: new Date().toISOString(),
+        interval_seconds: 1,
+        stale_after_seconds: 5,
+        data: {},
+      }),
+    );
+  });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
+  await expect(
+    page.getByText(/unavailable|waiting for telemetry/i).first(),
+  ).toBeVisible();
+  if (test.info().project.name === "mobile") {
+    await page.getByRole("button", { name: "Toggle navigation" }).click();
+  }
+  await page.getByRole("button", { name: "Cameras" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Cameras" }).first(),
+  ).toBeVisible();
+});
+
+test("render failure is contained by dashboard error boundary", async ({
+  page,
+  request,
+}) => {
+  const snapshot = await (await request.get("/api/v1/snapshot")).json();
+  snapshot.data.thermal.cooling_devices.value = "invalid fixture";
+  await page.routeWebSocket("**/ws/v1/telemetry", (socket) =>
+    socket.send(JSON.stringify(snapshot)),
+  );
+  await page.goto("/");
+  await expect(page.getByText("MOCK DATA")).toBeVisible();
+  if (test.info().project.name === "mobile") {
+    await page.getByRole("button", { name: "Toggle navigation" }).click();
+  }
+  await page.getByRole("button", { name: "Hardware" }).click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: "Dashboard unavailable" }),
+  ).toBeVisible();
+});
+
 test("all pages, responsive layout and mock identification", async ({
   page,
 }, info) => {

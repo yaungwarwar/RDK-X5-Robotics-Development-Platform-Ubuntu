@@ -1,5 +1,7 @@
 # Architecture
 
+This describes the installed v0.1.x monitoring architecture and historical implementation details. The separate v0.2.0 development-only camera laboratory is described in [V0.2.0_ARCHITECTURE.md](V0.2.0_ARCHITECTURE.md); it is not integrated into the installed dashboard. See [current status](IMPLEMENTATION_STATUS.md) for evidence and validation boundaries.
+
 ## Boundaries
 
 The native backend is Python 3.10-compatible FastAPI, Uvicorn, Pydantic and psutil. It owns hardware adapters and the shared collector. The only container contains compiled React/TypeScript assets and Nginx. ROS2, TogetheROS, Hobot libraries, GS130WI capture, BPU runtime and drivers stay on the host. No BlueOS dependency exists.

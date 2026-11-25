@@ -1,6 +1,12 @@
-# Current status — v0.1.3 (2026-11-25)
+# Current status — v0.2.0 development
 
-Workstation recovery and local QA are complete: 201 Python and 12 browser tests, strict pip check, real Nginx proxy and Compose profile checks passed. QA Nginx ownership and cleanup were independently observed. On 2026-11-25 the physical ARM64 target was upgraded from 0.1.2 to 0.1.3 using prepared transaction a70e894b6c244dc7b0aaefa44c70c143. Native health, dashboard, loopback bindings and repeated ROS2 discovery passed. The five-minute stability and continuous WebSocket observations passed; physical rollback remains untested because the user directed that v0.1.3 remain running; camera publishers and dynamic BPU inference remain pending because no camera or approved workload is active. See [physical acceptance and guarded procedure](V0.1.3_PHYSICAL_ACCEPTANCE.md), [final report](V0.1.X_FINAL_REPORT.md), and [QA infrastructure](QA_INFRASTRUCTURE.md).
+The physical target was last observed healthy with v0.1.3; that observation is historical and is not a current health check. The working tree contains separate v0.2.0 camera-laboratory development. The latest B.4.1 validation passed 270 Python and 32 browser cases, 302 unique cases, in each of three consecutive full runs; see [B.4.1 completion](V0.2.0_PHASE_B41_COMPLETION.md). The original independently failed `qa-results/qa-report.json` is preserved; the latest passing reports are under `qa-results/incident-001-validation/`. The earlier B.4 baseline was 267 Python and 32 browser cases. Physical reconnect, rollback, sustained-resource behavior and target CPU-rate isolation are not validated. Physical testing is suspended until continuous active cooling is confirmed and appropriate authorization is obtained.
+
+The inherited application `VERSION` and frontend package version still identify the v0.1.3 release; the v0.2.0 label refers to the development cycle and isolated laboratory, not a generated v0.2.0 release artifact.
+
+## Historical v0.1.3 status (2026-11-25)
+
+The original v0.1.3 workstation QA passed 201 Python and 12 browser tests. The physical ARM64 target was upgraded from 0.1.2 to 0.1.3, and native health, dashboard, loopback bindings, repeated ROS2 discovery and five-minute stability were observed. Camera publishers and a short left preview were observed later; reconnect, right/combined and sustained testing remain pending. Dynamic BPU inference and physical rollback remain untested. See [physical acceptance](V0.1.3_PHYSICAL_ACCEPTANCE.md), [Phase B.1 evidence](V0.2.0_PHASE_B1_COMPLETION.md), and [QA infrastructure](QA_INFRASTRUCTURE.md).
 
 The following material is historical, including earlier pending-work statements and old test counts; it does not describe the current v0.1.3 workstation or assert physical acceptance.
 
