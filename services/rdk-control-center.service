@@ -1,0 +1,33 @@
+[Unit]
+Description=RDK Control Center native read-only agent
+After=network.target
+
+[Service]
+Type=simple
+User=sunrise
+Group=sunrise
+WorkingDirectory=/home/sunrise/rdk-platform
+Environment=RDK_CONFIG=/home/sunrise/rdk-platform/config/rdkx5.yaml
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/home/sunrise/rdk-platform/scripts/start.sh --backend
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+InaccessiblePaths=-/run/docker.sock -/run/containerd/containerd.sock
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077
+TasksMax=96
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target

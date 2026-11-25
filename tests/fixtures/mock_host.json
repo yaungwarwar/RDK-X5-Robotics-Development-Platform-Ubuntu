@@ -1,0 +1,9 @@
+{
+  "system": {
+    "hostname": "rdk-x5-lab",
+    "os": "Ubuntu 22.04.5 LTS",
+    "kernel": "6.1.83",
+    "architecture": "aarch64"
+  },
+  "memory_bytes": 7408818585
+}

@@ -1,0 +1,24 @@
+{
+  "mode": "native",
+  "interval_seconds": 1.0,
+  "stale_after_seconds": 5.0,
+  "history_size": 60,
+  "allowed_hosts": [
+    "localhost",
+    "127.0.0.1"
+  ],
+  "allowed_origins": [
+    "http://localhost:8088",
+    "http://127.0.0.1:8088"
+  ],
+  "ros2_enabled": true,
+  "ros2_interval_seconds": 10.0,
+  "storage_paths": [
+    "/"
+  ],
+  "ros2_probe_timeout_seconds": 8.0,
+  "bpu_temperature_timeout_seconds": 1.0,
+  "bpu_temperature_interval_seconds": 30.0,
+  "bpu_temperature_max_backoff_seconds": 300.0,
+  "bpu_cpu_proxy_enabled": true
+}

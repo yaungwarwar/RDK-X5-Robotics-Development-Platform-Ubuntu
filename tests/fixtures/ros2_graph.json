@@ -1,0 +1,71 @@
+{
+  "nodes": [
+    "/mipi_cam",
+    "/rdk_control_center_monitor"
+  ],
+  "topics": [
+    {
+      "name": "/image_left_raw",
+      "types": [
+        "sensor_msgs/msg/Image"
+      ],
+      "publishers": 1
+    },
+    {
+      "name": "/image_right_raw",
+      "types": [
+        "sensor_msgs/msg/Image"
+      ],
+      "publishers": 1
+    },
+    {
+      "name": "/image_combine_raw",
+      "types": [
+        "sensor_msgs/msg/Image"
+      ],
+      "publishers": 1
+    },
+    {
+      "name": "/image_left_raw/camera_info",
+      "types": [
+        "sensor_msgs/msg/CameraInfo"
+      ],
+      "publishers": 1
+    },
+    {
+      "name": "/image_right_raw/camera_info",
+      "types": [
+        "sensor_msgs/msg/CameraInfo"
+      ],
+      "publishers": 1
+    },
+    {
+      "name": "/image_combine_raw/left/camera_info",
+      "types": [
+        "sensor_msgs/msg/CameraInfo"
+      ],
+      "publishers": 1
+    },
+    {
+      "name": "/image_combine_raw/right/camera_info",
+      "types": [
+        "sensor_msgs/msg/CameraInfo"
+      ],
+      "publishers": 1
+    },
+    {
+      "name": "/parameter_events",
+      "types": [
+        "rcl_interfaces/msg/ParameterEvent"
+      ],
+      "publishers": 1
+    },
+    {
+      "name": "/rosout",
+      "types": [
+        "rcl_interfaces/msg/Log"
+      ],
+      "publishers": 1
+    }
+  ]
+}
